@@ -1,0 +1,77 @@
+services:
+  mariadb:
+    image: mariadb:inception
+    build:
+      context: ./requirements/mariadb/
+      dockerfile: Dockerfile
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3306"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+  wordpress:
+    image: wordpress:inception
+    build:
+      context: ./requirements/wordpress/
+      dockerfile: Dockerfile
+    container_name: wordpress
+    env_file: .env
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+  nginx:
+    image: nginx:inception
+    build:
+      context: ./requirements/nginx/
+      dockerfile: Dockerfile
+    container_name: nginx
+    env_file: .env
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    ports:
+      - 443:443
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  inception:
+    name: inception
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/hael-ghd/data/wordpress
+
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/hael-ghd/data/mariadb
+
