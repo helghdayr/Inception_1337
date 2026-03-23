@@ -310,6 +310,6 @@ As per the Inception subject requirements:
 
 ## Author
 
-**Login:** `<your_login>`  
+**Login:** `hael-ghd`  
 **School:** 42  
 **Project:** Inception
