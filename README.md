@@ -311,5 +311,5 @@ As per the Inception subject requirements:
 ## Author
 
 **Login:** `hael-ghd`  
-**School:** 42  
+**School:** 1337 from 42  
 **Project:** Inception
